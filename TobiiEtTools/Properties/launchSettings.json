@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "TobiiEtTools": {
+      "commandName": "Project",
+      "commandLineArgs": "-i -n -s TPSP1-010107101943\r\n"
+    }
+  }
+}
