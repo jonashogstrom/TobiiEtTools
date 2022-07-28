@@ -22,6 +22,9 @@ Address: tet-tcp://192.168.0.112/
 Name: TPSP1-010107101943
 Firmware version: 2.6.1-orbicularis-0
 Runtime version: Legacy TTP (4.19.0/3)
+DisplayArea height: 297,0 mm
+DisplayArea width: 528,0 mm
+DisplayArea size: 23,9"
 License level: Professional
 Frequency: 1200
 Supported frequencies: 60, 120, 150, 300, 600, 1200
@@ -35,6 +38,6 @@ Capability [CanDoHMDBasedCalibration]: False
 Capability [HasHMDLensConfig]: False
 Capability [CanDoMonocularCalibration]: True
 Capability [HasEyeOpennessData]: True
-Eyetracking Mode: great_ape
+Eyetracking Mode: monkey
 Supported modes: human, monkey, great_ape
 ```
