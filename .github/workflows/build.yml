@@ -46,7 +46,7 @@ jobs:
 #        folder: 'source/bin/Release'
 #        recursive: true
 
-    - name: Upload nuget package
+    - name: Upload binaries
       uses: actions/upload-artifact@v2
       with:
         name: TobiiEtTools_${{steps.version.outputs.version}}
