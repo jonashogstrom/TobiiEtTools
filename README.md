@@ -14,6 +14,8 @@ TobiiEtTools.exe <switches>
 
 Sample output 
 ```
+> TobiiEtTools.exe -i -s TPSP1-010107101943
+
 Serialnumber: TPSP1-010107101943
 Model: Tobii Pro Spectrum
 Address: tet-tcp://192.168.0.112/
