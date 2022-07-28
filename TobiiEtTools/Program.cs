@@ -29,28 +29,33 @@ public class Main
         }
         if (_options.Frequency != 0 && EnsureSingleTracker(trackers))
         {
-            ChangeFrequency(trackers);
+            ChangeFrequency(trackers.First());
         }
 
-        if (_options.Name != null && EnsureSingleTracker(trackers))
+        if (!string.IsNullOrEmpty(_options.Name) && EnsureSingleTracker(trackers))
         {
-            ChangeName(trackers);
+            ChangeName(trackers.First());
+        }
+
+        if (!string.IsNullOrEmpty(_options.Mode) && EnsureSingleTracker(trackers))
+        {
+            ChangeMode(trackers.First());
         }
     }
 
-    private void ChangeName(List<IEyeTracker> trackers)
+    private void ChangeName(IEyeTracker tracker)
     {
-        var newName = string.IsNullOrEmpty(_options.Name) ? trackers.First().SerialNumber : _options.Name;
-        var oldName = trackers.First().DeviceName;
+        var newName = string.IsNullOrEmpty(_options.Name) ? tracker.SerialNumber : _options.Name;
+        var oldName = tracker.DeviceName;
         try
         {
-            trackers.First().SetDeviceName(newName);
+            tracker.SetDeviceName(newName);
         }
         catch
         {
         }
 
-        if (trackers.First().DeviceName == newName)
+        if (tracker.DeviceName == newName)
             Console.WriteLine($"Changed device name from [{oldName}] to [{newName}]");
         else
         {
@@ -58,17 +63,36 @@ public class Main
         }
     }
 
-    private void ChangeFrequency(List<IEyeTracker> trackers)
+    private void ChangeMode(IEyeTracker tracker)
     {
+        var oldMode = tracker.GetEyeTrackingMode();
         try
         {
-            trackers.First().SetGazeOutputFrequency(_options.Frequency);
+            tracker.SetEyeTrackingMode(_options.Mode);
         }
         catch
         {
         }
 
-        if ((int)trackers.First().GetGazeOutputFrequency() == _options.Frequency)
+        if (tracker.GetEyeTrackingMode() == _options.Mode)
+            Console.WriteLine($"Changed eyetracking mode from [{oldMode}] to [{_options.Mode}]");
+        else
+        {
+            Console.WriteLine("Setting eye tracking mode failed");
+        }
+    }
+
+    private void ChangeFrequency(IEyeTracker tracker)
+    {
+        try
+        {
+            tracker.SetGazeOutputFrequency(_options.Frequency);
+        }
+        catch
+        {
+        }
+
+        if ((int)tracker.GetGazeOutputFrequency() == _options.Frequency)
             Console.WriteLine("Changed frequency " + _options.Frequency);
         else
         {
@@ -84,6 +108,11 @@ public class Main
         Console.WriteLine($"Name: {eyeTracker.DeviceName}");
         Console.WriteLine($"Firmware version: {eyeTracker.FirmwareVersion}");
         Console.WriteLine($"Runtime version: {eyeTracker.RuntimeVersion}");
+        var da = eyeTracker.GetDisplayArea();
+        Console.WriteLine($"DisplayArea height: {da.Height:F1} mm");
+        Console.WriteLine($"DisplayArea width: {da.Width:F1} mm");
+        var diag = Math.Sqrt(da.Height * da.Height + da.Width * da.Width) / 10 / 2.54;
+        Console.WriteLine($"DisplayArea size: {diag:F1}\"");
         var m = ((IEyeTrackerMaintenance)eyeTracker);
         Console.WriteLine($"License level: {m.GetLicenseLevel()}");
         try

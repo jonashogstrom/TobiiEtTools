@@ -8,6 +8,8 @@ public class Options
     public string Serial { get; set; }
     [Option('f', "frequency", Required = false, HelpText = "Sets the frequency of the tracker.")]
     public int Frequency { get; set; }
+    [Option('m', "mode", Required = false, HelpText = "Sets the eyetracking mode of the tracker.")]
+    public string Mode { get; set; }
     [Option('i', "info", Required = false, HelpText = "Print tracker info.")]
     public bool Info { get; set; }
 }
