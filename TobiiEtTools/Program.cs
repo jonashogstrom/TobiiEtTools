@@ -27,29 +27,53 @@ public class Main
             foreach (var t in trackers)
                 PrintInfo(t);
         }
-        if (_options.Frequency != 0 && EnsureSingleTracker(trackers)) 
+        if (_options.Frequency != 0 && EnsureSingleTracker(trackers))
         {
-            trackers.First().SetGazeOutputFrequency(_options.Frequency);
-            if ((int)trackers.First().GetGazeOutputFrequency() == _options.Frequency)
-                Console.WriteLine("Changed frequency " + _options.Frequency);
-            else
-            {
-                Console.WriteLine("Setting frequency failed");
-            }
-        }
-        if (_options.Name != null && EnsureSingleTracker(trackers))
-        {
-            var newName = (_options.Name != "") ? _options.Name : trackers.First().SerialNumber;
-            var oldName = trackers.First().DeviceName;
-            trackers.First().SetDeviceName(newName);
-            if (trackers.First().DeviceName == newName)
-                Console.WriteLine($"Changed device name from [{oldName}] to [{newName}]");
-            else
-            {
-                Console.WriteLine("Setting device name failed");
-            }
+            ChangeFrequency(trackers);
         }
 
+        if (_options.Name != null && EnsureSingleTracker(trackers))
+        {
+            ChangeName(trackers);
+        }
+    }
+
+    private void ChangeName(List<IEyeTracker> trackers)
+    {
+        var newName = string.IsNullOrEmpty(_options.Name) ? trackers.First().SerialNumber : _options.Name;
+        var oldName = trackers.First().DeviceName;
+        try
+        {
+            trackers.First().SetDeviceName(newName);
+        }
+        catch
+        {
+        }
+
+        if (trackers.First().DeviceName == newName)
+            Console.WriteLine($"Changed device name from [{oldName}] to [{newName}]");
+        else
+        {
+            Console.WriteLine("Setting device name failed");
+        }
+    }
+
+    private void ChangeFrequency(List<IEyeTracker> trackers)
+    {
+        try
+        {
+            trackers.First().SetGazeOutputFrequency(_options.Frequency);
+        }
+        catch
+        {
+        }
+
+        if ((int)trackers.First().GetGazeOutputFrequency() == _options.Frequency)
+            Console.WriteLine("Changed frequency " + _options.Frequency);
+        else
+        {
+            Console.WriteLine("Setting frequency failed");
+        }
     }
 
     private void PrintInfo(IEyeTracker eyeTracker)
@@ -73,17 +97,16 @@ public class Main
 
         Console.WriteLine($"Frequency: {eyeTracker.GetGazeOutputFrequency()}");
         if (eyeTracker.GetAllGazeOutputFrequencies().Count > 1)
-            Console.WriteLine($"Supported frequencies: "+string.Join(", ", eyeTracker.GetAllGazeOutputFrequencies().OrderBy(f=>f)));
-        foreach (var c in Enum.GetValues<Capabilities>().Where(cap=>cap != Capabilities.None))
+            Console.WriteLine($"Supported frequencies: " + string.Join(", ", eyeTracker.GetAllGazeOutputFrequencies().OrderBy(f => f)));
+        foreach (var c in Enum.GetValues<Capabilities>().Where(cap => cap != Capabilities.None))
         {
-            Console.WriteLine($"Capability [{c}]: "+((eyeTracker.DeviceCapabilities & c) == c));
+            Console.WriteLine($"Capability [{c}]: " + ((eyeTracker.DeviceCapabilities & c) == c));
         }
 
         if (eyeTracker.GetAllEyeTrackingModes().Count > 1)
         {
             Console.WriteLine($"Eyetracking Mode: {eyeTracker.GetEyeTrackingMode()}");
             Console.WriteLine($"Supported modes: " + string.Join(", ", eyeTracker.GetAllEyeTrackingModes()));
-
         }
         Console.WriteLine();
     }
