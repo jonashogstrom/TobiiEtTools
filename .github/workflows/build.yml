@@ -1,0 +1,53 @@
+name: Build G3SDK
+
+on:
+  push:
+    branches: [ main, f/** ]
+    tags:        
+      - v*
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Application Version
+      id: version
+      uses: paulhatch/semantic-version@v4.0.2
+      with:        
+        format: "${major}.${minor}.${patch}.${increment}"
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.x'
+        include-prerelease: true
+
+    - name: Install dependencies
+      run: dotnet restore
+
+    - name: Build debug
+      run: dotnet build --configuration Debug /p:Version=${{steps.version.outputs.version}} /p:FileVersion=${{steps.version.outputs.version}} /p:AssemblyVersion=${{steps.version.outputs.version}}
+
+    - name: Build release
+      run: dotnet build --configuration Release /p:Version=${{steps.version.outputs.version}} /p:FileVersion=${{steps.version.outputs.version}} /p:AssemblyVersion=${{steps.version.outputs.version}}
+
+#    - name: Sign release binaries
+#      uses: jonashogstrom/code-sign-action@v2.0.9
+#      with:
+#        certificate: '${{secrets.TOBIICODESIGNCERTIFICATE_2022_B64}}'
+#        sign_args: '/v /p ${{secrets.TOBIICODESIGNPASSWORD_2022}} /tr http://timestamp.digicert.com'
+#        folder: 'source/bin/Release'
+#        recursive: true
+
+    - name: Upload nuget package
+      uses: actions/upload-artifact@v2
+      with:
+        name: TobiiEtTools_${{steps.version.outputs.version}}
+        path: TobiiEtTools/bin/Release/net6.0/*.*
